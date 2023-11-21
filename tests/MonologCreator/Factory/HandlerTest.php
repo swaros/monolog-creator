@@ -3,33 +3,33 @@
 namespace MonologCreator\Factory;
 
 use Monolog;
+use MonologCreator\Exception;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
+use Predis\Client;
 
 /**
  * Class HandlerTest
  *
  * @package MonologCreator\Factory
  */
-class HandlerTest extends \PHPUnit\Framework\TestCase
+class HandlerTest extends TestCase
 {
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
+     * @var Formatter|MockObject|null
      */
-    private $mockFormatterFactory = null;
+    private Formatter|MockObject|null $mockFormatterFactory = null;
 
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
+     * @var MockObject|null|Monolog\Formatter\FormatterInterface
      */
-    private $mockFormatter = null;
+    private MockObject|null|Monolog\Formatter\FormatterInterface $mockFormatter = null;
 
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
+     * @var MockObject|Monolog\Handler\SyslogUdp\UdpSocket|null
      */
-    private $mockUdpSocket = null;
+    private MockObject|null|Monolog\Handler\SyslogUdp\UdpSocket $mockUdpSocket = null;
 
-    /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
-     */
-    private $mockPredisClient = null;
 
     public function setUp(): void
     {
@@ -37,26 +37,22 @@ class HandlerTest extends \PHPUnit\Framework\TestCase
 
         $this->mockFormatterFactory = $this->getMockBuilder('\MonologCreator\Factory\Formatter')
             ->disableOriginalConstructor()
-            ->setMethods(['create'])
+            ->onlyMethods(['create'])
             ->getMock();
 
         $this->mockFormatter = $this->getMockBuilder('\Monolog\Formatter\FormatterInterface')
             ->disableOriginalConstructor()
-            ->setMethods(['format', 'formatBatch'])
+            ->onlyMethods(['format', 'formatBatch'])
             ->getMock();
 
         $this->mockUdpSocket = $this->getMockBuilder('\Monolog\Handler\SyslogUdp\UdpSocket')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->mockPredisClient = $this->getMockBuilder('\Predis\Client')
             ->disableOriginalConstructor()
             ->getMock();
     }
 
     public function testCreateFailNoConfig()
     {
-        $this->expectException(\MonologCreator\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('no handler configuration found');
 
         $factory = new Handler(array(), $this->mockFormatterFactory);
@@ -76,7 +72,7 @@ class HandlerTest extends \PHPUnit\Framework\TestCase
             true
         );
 
-        $this->expectException(\MonologCreator\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('no handler configuration found for handlerType: mockHandler');
 
         $factory = new Handler($config, $this->mockFormatterFactory);
@@ -96,7 +92,7 @@ class HandlerTest extends \PHPUnit\Framework\TestCase
             true
         );
 
-        $this->expectException(\MonologCreator\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('handler type: mockHandler is not supported');
 
         $factory = new Handler($config, $this->mockFormatterFactory);
@@ -114,13 +110,16 @@ class HandlerTest extends \PHPUnit\Framework\TestCase
             true
         );
 
-        $this->expectException(\MonologCreator\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('path configuration for stream handler is missing');
 
         $factory = new Handler($config, $this->mockFormatterFactory);
         $factory->create('stream', 'INFO');
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCreateStreamHandler()
     {
         $config = json_decode(
@@ -157,7 +156,7 @@ class HandlerTest extends \PHPUnit\Framework\TestCase
             true
         );
 
-        $this->expectException(\MonologCreator\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('host configuration for udp handler is missing');
 
         $factory = new Handler($config, $this->mockFormatterFactory);
@@ -177,13 +176,16 @@ class HandlerTest extends \PHPUnit\Framework\TestCase
             true
         );
 
-        $this->expectException(\MonologCreator\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('port configuration for udp handler is missing');
 
         $factory = new Handler($config, $this->mockFormatterFactory);
         $factory->create('udp', 'INFO');
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCreateUdp()
     {
         $config = json_decode(
@@ -206,7 +208,7 @@ class HandlerTest extends \PHPUnit\Framework\TestCase
                     $this->mockFormatterFactory,
                 ]
             )
-            ->setMethods(['createUdpSocket'])
+            ->onlyMethods(['createUdpSocket'])
             ->getMock();
 
         $factory->expects($this->exactly(1))
@@ -215,7 +217,7 @@ class HandlerTest extends \PHPUnit\Framework\TestCase
                 $this->equalTo('192.168.50.48'),
                 $this->equalTo('9999')
             )
-            ->will($this->returnValue($this->mockUdpSocket));
+            ->willReturn($this->mockUdpSocket);
 
         $handler = $factory->create('udp', 'INFO');
 
@@ -225,13 +227,16 @@ class HandlerTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCreateWithFormatter()
     {
         $this->mockFormatterFactory
             ->expects($this->exactly(1))
             ->method('create')
             ->with($this->equalTo('logstash'))
-            ->will($this->returnValue($this->mockFormatter));
+            ->willReturn($this->mockFormatter);
 
         $config = json_decode(
             '{
@@ -279,7 +284,7 @@ class HandlerTest extends \PHPUnit\Framework\TestCase
             true
         );
 
-        $this->expectException(\MonologCreator\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('key configuration for redis handler is missing');
 
         $factory = new Handler($config, $this->mockFormatterFactory);
@@ -299,13 +304,16 @@ class HandlerTest extends \PHPUnit\Framework\TestCase
             true
         );
 
-        $this->expectException(\MonologCreator\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('predis client object is not set');
 
         $factory = new Handler($config, $this->mockFormatterFactory);
         $factory->create('redis', 'INFO');
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCreateRedis()
     {
         $config = json_decode(
@@ -322,7 +330,7 @@ class HandlerTest extends \PHPUnit\Framework\TestCase
         $factory      = new Handler(
             $config,
             $this->mockFormatterFactory,
-            new \Predis\Client('')
+            new Client('')
         );
         $redisHandler = $factory->create('redis', 'INFO');
 
