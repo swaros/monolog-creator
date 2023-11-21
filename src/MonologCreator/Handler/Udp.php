@@ -2,6 +2,11 @@
 
 namespace MonologCreator\Handler;
 
+use Monolog\Handler\AbstractProcessingHandler;
+use Monolog\Handler\SyslogUdp\UdpSocket;
+use Monolog\Level;
+use Monolog\LogRecord;
+
 /**
  * Custom Monolog Handler to sent logs via UDP. Its based on
  * \Monolog\Handler\SyslogUdp\UdpSocket.
@@ -10,17 +15,17 @@ namespace MonologCreator\Handler;
  *
  * @@codeCoverageIgnore
  */
-class Udp extends \Monolog\Handler\AbstractProcessingHandler
+class Udp extends AbstractProcessingHandler
 {
     public function __construct(
-        private \Monolog\Handler\SyslogUdp\UdpSocket $socket,
-        int|string|\Monolog\Level $level = \Monolog\Level::DEBUG,
+        private UdpSocket $socket,
+        int|string|Level $level = Level::Debug,
         bool $bubble = true
     ) {
         parent::__construct($level, $bubble);
     }
 
-    protected function write(\Monolog\LogRecord $record): void
+    protected function write(LogRecord $record): void
     {
         $lines = $this->splitMessageIntoLines($record->formatted);
 
@@ -43,7 +48,7 @@ class Udp extends \Monolog\Handler\AbstractProcessingHandler
         return preg_split('/$\R?^/m', $message);
     }
 
-    public function setSocket(\Monolog\Handler\SyslogUdp\UdpSocket $socket): void
+    public function setSocket(UdpSocket $socket): void
     {
         $this->socket = $socket;
     }

@@ -2,8 +2,11 @@
 
 namespace MonologCreator\Factory;
 
+use Monolog\Handler\SyslogUdp\UdpSocket;
+use Monolog\Level;
 use MonologCreator;
 use Monolog;
+use Predis\Client;
 
 /**
  * @package MonologCreator\Factory
@@ -11,9 +14,9 @@ use Monolog;
 class Handler
 {
     public function __construct(
-        private array $config,
-        private MonologCreator\Factory\Formatter $formatterFactory,
-        private \Predis\Client|null $predisClient = null
+        private readonly array $config,
+        private readonly MonologCreator\Factory\Formatter $formatterFactory,
+        private readonly Client|null $predisClient = null
     ) {
     }
 
@@ -35,7 +38,6 @@ class Handler
             );
         }
 
-        $handler       = null;
         $handlerConfig = $this->config['handler'][$handlerType];
 
         // evaluate handler
@@ -74,7 +76,7 @@ class Handler
 
         return new Monolog\Handler\StreamHandler(
             $handlerConfig['path'],
-            \Monolog\Level::fromName($level)
+            Level::fromName($level)
         );
     }
 
@@ -100,12 +102,14 @@ class Handler
                 $handlerConfig['host'],
                 $handlerConfig['port']
             ),
-            \Monolog\Level::fromName($level)
+            Level::fromName($level)
         );
     }
 
     /**
-     * @return Monolog\Handler\SyslogUdp\UdpSocket
+     * @param string $host
+     * @param int $port
+     * @return UdpSocket
      *
      * @codeCoverageIgnore
      */
@@ -137,7 +141,7 @@ class Handler
         return new Monolog\Handler\RedisHandler(
             $this->predisClient,
             $handlerConfig['key'],
-            \Monolog\Level::fromName($level)
+            Level::fromName($level)
         );
     }
 }

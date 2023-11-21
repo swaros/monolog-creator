@@ -4,6 +4,7 @@ namespace MonologCreator;
 
 use MonologCreator;
 use Monolog;
+use Predis\Client;
 
 /**
  * Factory class to for creating monolog loggers with pre-configured array
@@ -12,19 +13,19 @@ class Factory
 {
     /**
      * optional, only needed for the redis handler
-     * @param \Predis\Client|null
+     * @var Client|null
      */
-    private $predisClient = null;
+    private ?Client $predisClient = null;
 
     /**
      * saves already created loggers
      *
      * @var array
      */
-    private $logger = [];
+    private array $logger = [];
 
     public function __construct(
-        private array $config
+        private readonly array $config
     ) {
     }
 
@@ -167,7 +168,7 @@ class Factory
         return $loggerConfig;
     }
 
-    public function setPredisClient(\Predis\Client $predisClient): void
+    public function setPredisClient(Client $predisClient): void
     {
         $this->predisClient = $predisClient;
     }

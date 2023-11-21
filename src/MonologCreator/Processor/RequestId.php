@@ -2,6 +2,9 @@
 
 namespace MonologCreator\Processor;
 
+use Exception;
+use Monolog\LogRecord;
+
 /**
  * Injects a per-request UUID into the log output.
  */
@@ -10,12 +13,12 @@ class RequestId
     /**
      * @var string
      */
-    private $uuid = '';
+    private string $uuid = '';
 
     /**
      * Called by Monolog - Allows processors to manipulate data.
      */
-    public function __invoke(\Monolog\LogRecord $record): \Monolog\LogRecord
+    public function __invoke(LogRecord $record): LogRecord
     {
         if (true === empty($this->uuid)) {
             $this->uuid = $this->generateUUID();
@@ -51,6 +54,7 @@ class RequestId
     /**
      * Proxy around random_bytes
      * @codeCoverageIgnore
+     * @throws Exception
      */
     protected function randomBytes(int $amt): string
     {

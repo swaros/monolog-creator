@@ -43,7 +43,7 @@ $loggerFactory = new \MonologCreator\Factory($config);
 
 $logger = $loggerFactory->createLogger('name');
 $logger->addWarning('I am a warning');
-?>
+
 ~~~
 
 #### different logger
@@ -78,7 +78,7 @@ $loggerFactory = new \MonologCreator\Factory($config);
 
 $logger = $loggerFactory->createLogger('test');
 $logger->addDebug('I am a debug message');
-?>
+
 ~~~
 
 #### different formatter
