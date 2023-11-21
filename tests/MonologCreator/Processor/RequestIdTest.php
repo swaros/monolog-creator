@@ -69,7 +69,7 @@ class RequestIdTest extends \PHPUnit\Framework\TestCase
     {
         $subject =
             $this->getMockBuilder('MonologCreator\Processor\RequestId')
-                ->setMethods(
+                ->onlyMethods(
                     array(
                         'isCallable',
                         'randomBytes',
@@ -101,7 +101,7 @@ class RequestIdTest extends \PHPUnit\Framework\TestCase
     {
         $subject =
             $this->getMockBuilder('MonologCreator\Processor\RequestId')
-                ->setMethods(
+                ->onlyMethods(
                     array(
                         'isCallable',
                         'opensslRandomPseudoBytes',
@@ -112,10 +112,6 @@ class RequestIdTest extends \PHPUnit\Framework\TestCase
 
         $subject->expects($this->exactly(2))
             ->method('isCallable')
-            ->withConsecutive(
-                [$this->equalTo('random_bytes')],
-                [$this->equalTo('openssl_random_pseudo_bytes')]
-            )
             ->willReturnOnConsecutiveCalls(
                 false,
                 true
@@ -139,7 +135,7 @@ class RequestIdTest extends \PHPUnit\Framework\TestCase
     {
         $subject =
             $this->getMockBuilder('MonologCreator\Processor\RequestId')
-                ->setMethods(
+                ->onlyMethods(
                     array(
                         'isCallable',
                         'generateBytesWithMtRand',
@@ -150,11 +146,6 @@ class RequestIdTest extends \PHPUnit\Framework\TestCase
 
         $subject->expects($this->exactly(3))
             ->method('isCallable')
-            ->withConsecutive(
-                [$this->equalTo('random_bytes')],
-                [$this->equalTo('openssl_random_pseudo_bytes')],
-                [$this->equalTo('mt_rand')]
-            )
             ->willReturnOnConsecutiveCalls(
                 false,
                 false,
@@ -180,7 +171,7 @@ class RequestIdTest extends \PHPUnit\Framework\TestCase
     {
         $subject =
             $this->getMockBuilder('MonologCreator\Processor\RequestId')
-                ->setMethods(
+                ->onlyMethods(
                     array(
                         'isCallable',
                         'generateBytesWithMtRand',
@@ -191,11 +182,6 @@ class RequestIdTest extends \PHPUnit\Framework\TestCase
 
         $subject->expects($this->exactly(3))
             ->method('isCallable')
-            ->withConsecutive(
-                [$this->equalTo('random_bytes')],
-                [$this->equalTo('openssl_random_pseudo_bytes')],
-                [$this->equalTo('mt_rand')]
-            )
             ->willReturnOnConsecutiveCalls(
                 false,
                 false,
@@ -216,7 +202,7 @@ class RequestIdTest extends \PHPUnit\Framework\TestCase
     {
         $subject =
             $this->getMockBuilder('MonologCreator\Processor\RequestId')
-                ->setMethods(
+                ->onlyMethods(
                     array(
                         'isCallable',
                         'mtRand',
@@ -227,11 +213,6 @@ class RequestIdTest extends \PHPUnit\Framework\TestCase
 
         $subject->expects($this->exactly(3))
             ->method('isCallable')
-            ->withConsecutive(
-                [$this->equalTo('random_bytes')],
-                [$this->equalTo('openssl_random_pseudo_bytes')],
-                [$this->equalTo('mt_rand')]
-            )
             ->willReturnOnConsecutiveCalls(
                 false,
                 false,
