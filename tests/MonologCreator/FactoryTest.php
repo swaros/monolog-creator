@@ -85,7 +85,7 @@ class FactoryTest extends \PHPUnit\Framework\TestCase
         $loggerFactory->createLogger('test');
     }
 
-    public function dataProviderCreateDefaultLoggerFail()
+    public static function dataProviderCreateDefaultLoggerFail(): array
     {
         return array(
             // missing default logger

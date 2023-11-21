@@ -2,16 +2,19 @@
 
 namespace MonologCreator\Factory;
 
+use MonologCreator\Exception;
+use PHPUnit\Framework\TestCase;
+
 /**
  * Class FormatterTest
  *
  * @package MonologCreator\Factory
  */
-class FormatterTest extends \PHPUnit\Framework\TestCase
+class FormatterTest extends TestCase
 {
     public function testCreateFailNoConfig()
     {
-        $this->expectException(\MonologCreator\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('no formatter configuration found');
 
         $factory = new Formatter(array());
@@ -31,7 +34,7 @@ class FormatterTest extends \PHPUnit\Framework\TestCase
             true
         );
 
-        $this->expectException(\MonologCreator\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('no formatter configuration found for formatterType: mockFormatter');
 
         $factory = new Formatter($config);
@@ -51,7 +54,7 @@ class FormatterTest extends \PHPUnit\Framework\TestCase
             true
         );
 
-        $this->expectException(\MonologCreator\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('formatter type: mockFormatter is not supported');
 
         $factory = new Formatter($config);
@@ -69,13 +72,16 @@ class FormatterTest extends \PHPUnit\Framework\TestCase
             true
         );
 
-        $this->expectException(\MonologCreator\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('type configuration for logstash formatter is missing');
 
         $factory = new Formatter($config);
         $factory->create('logstash');
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCreateLine()
     {
         $config = json_decode(
@@ -96,6 +102,9 @@ class FormatterTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCreateLineFormat()
     {
         $config = json_decode(
@@ -118,6 +127,9 @@ class FormatterTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCreateLineDateFormat()
     {
         $config = json_decode(
@@ -140,6 +152,9 @@ class FormatterTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCreateLineIncludeStacktraces()
     {
         $config = json_decode(
@@ -162,6 +177,9 @@ class FormatterTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCreateLineAllowInlineLineBreaks()
     {
         $config = json_decode(
@@ -184,6 +202,9 @@ class FormatterTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCreateLineIgnoreEmptyContextAndExtra()
     {
         $config = json_decode(
@@ -206,6 +227,9 @@ class FormatterTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCreateLogstash()
     {
         $config = json_decode(
@@ -228,6 +252,9 @@ class FormatterTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCreateJson()
     {
         $config = json_decode(
